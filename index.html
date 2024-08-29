@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robô Comando - Inventário</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <h1>Robô Comando</h1>
+
+    <form id="initial-stats-form">
+        <label for="stamina">Stamina:</label>
+        <input type="number" id="stamina" name="stamina" value="100" required><br>
+
+        <label for="habilidade">Habilidade:</label>
+        <input type="number" id="habilidade" name="habilidade" value="100" required><br>
+
+        <label for="sorte">Sorte:</label>
+        <input type="number" id="sorte" name="sorte" value="100" required><br>
+
+        <button type="submit">Start Game</button>
+    </form>
+    <script>
+        document.getElementById('initial-stats-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const stamina = document.getElementById('stamina').value;
+            const habilidade = document.getElementById('habilidade').value;
+            const sorte = document.getElementById('sorte').value;
+
+            fetch('initialize_game.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `stamina=${encodeURIComponent(stamina)}&habilidade=${encodeURIComponent(habilidade)}&sorte=${encodeURIComponent(sorte)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Game initialized successfully!');
+                    // Redirect or update the UI as needed
+                } else {
+                    alert('Failed to initialize game.');
+                }
+            });
+        });
+    </script>
+
+    <h2>Status do Personagem</h2>
+    <div class="stat">
+        <span>Stamina:</span>
+        <span id="stamina-initial">[Valor Inicial]</span> |
+        <span id="stamina-points">[Valor Atual]</span>
+        <div class="button-group">
+            <button onclick="updateStat('stamina', 'decrement')">-</button>
+            <button onclick="updateStat('stamina', 'increment')">+</button>
+        </div>
+    </div>
+    <div class="stat">
+        <span>Habilidade:</span>
+        <span id="habilidade-initial">[Valor Inicial]</span> |
+        <span id="habilidade-points">[Valor Atual]</span>
+        <div class="button-group">
+            <button onclick="updateStat('habilidade', 'decrement')">-</button>
+            <button onclick="updateStat('habilidade', 'increment')">+</button>
+        </div>
+    </div>
+    <div class="stat">
+        <span>Sorte:</span>
+        <span id="sorte-initial">[Valor Inicial]</span> |
+        <span id="sorte-points">[Valor Atual]</span>
+        <div class="button-group">
+            <button onclick="updateStat('sorte', 'decrement')">-</button>
+            <button onclick="updateStat('sorte', 'increment')">+</button>
+        </div>
+    </div>
+
+    <h2>Inventário</h2>
+    <div id="inventory">
+        <!-- Lista de itens vai aparecer aqui -->
+    </div>
+    <button onclick="addItem()">Adicionar Item</button>
+    
+    <h2>Anotações</h2>
+    <div id="notes-section">
+        <form id="note-form" onsubmit="addNote(); return false;">
+            <textarea id="note-content" placeholder="Escreva sua anotação aqui..."></textarea>
+            <button type="submit">Salvar Anotação</button>
+        </form>
+        <div id="notes-list">
+            <!-- Anotações serão exibidas aqui -->
+        </div>
+    </div>
+
+    <h2>Informações do Robô</h2>
+    <div id="robot-section">
+        <form id="robot-form" onsubmit="saveRobot(); return false;">
+            <label for="robot-name">Nome do Robô:</label>
+            <input type="text" id="robot-name" required>
+            
+            <label for="robot-armor">Armadura:</label>
+            <input type="number" id="robot-armor" required>
+            
+            <label for="robot-speed">Velocidade:</label>
+            <select id="robot-speed" required>
+                <option value="lento">Lento</option>
+                <option value="medio">Médio</option>
+                <option value="rapido">Rápido</option>
+                <option value="muito rapido">Muito Rápido</option>
+            </select>
+            
+            <label for="robot-combat">Combate:</label>
+            <input type="number" id="robot-combat" required>
+            
+            <label for="robot-bonus">Bônus:</label>
+            <input type="number" id="robot-bonus">
+            
+            <label for="robot-specialty">Especialidade:</label>
+            <textarea id="robot-specialty"></textarea>
+            
+            <button type="submit">Salvar Informações do Robô</button>
+        </form>
+        
+        <div id="robot-info">
+            <!-- Informações do robô serão exibidas aqui -->
+        </div>
+    </div>
+
+    <h2>Rolagem de Dados</h2>
+    <div id="dice-roller">
+        <button onclick="rollDice(1)">Rolar 1 Dado</button>
+        <button onclick="rollDice(2)">Rolar 2 Dados</button>
+        <div id="dice-results">
+            <span>Resultado: </span>
+            <span id="results-display">-</span>
+        </div>
+    </div>
+
+    <h2>Combate</h2>
+    <h2>
+        <button id="toggle-combat-foot" onclick="toggleSection('combat-foot')">Combates a Pé</button>
+    </h2>
+    <div id="combat-foot" class="collapsible">
+        <!-- Blocos de inimigos serão gerados aqui -->
+    </div>
+    <h2>
+        <button id="toggle-combat-robots" onclick="toggleSection('combat-robots')">Combates com Robôs</button>
+    </h2>
+    <div id="combat-robots" class="collapsible">
+        <!-- Blocos de robôs serão gerados aqui -->
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
